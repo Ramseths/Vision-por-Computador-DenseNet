@@ -31,7 +31,7 @@ def allowed_file(filename):
 def pag_principal():
 	return 'El servicio se encuentra activo'
 
-@app.route('/modelo/covid19/', methods=['GET','POST'])
+@app.route('/modelo/', methods=['GET','POST'])
 def procesar():
     data = {"success": False}
     if request.method == "POST":
