@@ -57,7 +57,7 @@ def procesar():
             test_image /= 255
 
             with graph.as_default():
-            	result = loaded_model.predict(test_image)[0][0]
+            	result = cargar_modelo.predict(test_image)[0][0]
             	# print(result)
             	
 		        # Resultados
