@@ -10,7 +10,7 @@ def leerModelo():
 
     #Cargar el modelo
     modelo_cargado = load_model(MODEL_PATH + "/" + FILENAME_MODEL_TO_LOAD)
-    print("El modelo se ha cargado: ", loaded_model)
+    print("El modelo se ha cargado: ", modelo_cargado)
 
     graph = tf.get_default_graph()
     return modelo_cargado, graph
