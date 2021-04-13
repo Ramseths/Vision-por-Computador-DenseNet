@@ -7,9 +7,9 @@ import requests
 import json
 import os
 from werkzeug.utils import secure_filename
-from model_loader import cargarModelo
+from cargar import leerModelo
 
-UPLOAD_FOLDER = '../images/uploads'
+UPLOAD_FOLDER = '../imagenes/subidas'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 #Definir el puerto
@@ -19,8 +19,8 @@ print ("Puerto establecido: ", puerto)
 #Iniciar el servicio
 app = Flask(__name__)
 CORS(app)
-global loaded_model, graph
-loaded_model, graph = cargarModelo()
+global cargar_modelo, graph
+cargar_modelo, graph = leerModelo()
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename):
@@ -28,11 +28,11 @@ def allowed_file(filename):
 
 #Definir una ruta
 @app.route('/')
-def main_page():
-	return '¡Servicio REST activo!'
+def pag_principal():
+	return 'El servicio se encuentra activo'
 
-@app.route('/model/covid19/', methods=['GET','POST'])
-def default():
+@app.route('/modelo/covid19/', methods=['GET','POST'])
+def procesar():
     data = {"success": False}
     if request.method == "POST":
         # check if the post request has the file part
@@ -48,10 +48,10 @@ def default():
 
             #loading image
             filename = UPLOAD_FOLDER + '/' + filename
-            print("\nfilename:",filename)
+            print("\nNombre del archivo:",filename)
 
-            image_to_predict = image.load_img(filename, target_size=(224, 224))
-            test_image = image.img_to_array(image_to_predict)
+            img_a_predecir = image.load_img(filename, target_size=(224, 224))
+            test_image = image.img_to_array(img_a_predecir)
             test_image = np.expand_dims(test_image, axis = 0)
             test_image = test_image.astype('float32')
             test_image /= 255
@@ -60,7 +60,7 @@ def default():
             	result = loaded_model.predict(test_image)[0][0]
             	# print(result)
             	
-		# Resultados
+		        # Resultados
             	prediccion = 1 if (result >= 0.5) else 0
             	CLASSES = ['Normal', 'Covid19+']
 
@@ -70,15 +70,15 @@ def default():
             	print(f"Predicción obtenida: {ClassPred}")
             	print("Probabilidad: {:.2%}".format(ClassProb))
 
-            	#Results as Json
-            	data["predictions"] = []
-            	r = {"label": ClassPred, "score": float(ClassProb)}
-            	data["predictions"].append(r)
+            	#Resultados en formato JSON
+            	data["predicciones"] = []
+            	r = {"Clase": ClassPred, "Resultado": float(ClassProb)}
+            	data["predicciones"].append(r)
 
-            	#Success
+            	#Cambia el estado
             	data["success"] = True
 
     return jsonify(data)
 
-# Run de application
+#Hacer disponible el servicio
 app.run(host='0.0.0.0',port=puerto, threaded=False)
