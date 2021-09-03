@@ -35,18 +35,18 @@ def pag_principal():
 def procesar():
     data = {"success": False}
     if request.method == "POST":
-        # check if the post request has the file part
+        # Revision de la respuesta
         if 'file' not in request.files:
             print('No file part')
         file = request.files['file']
-        # if user does not select file, browser also submit a empty part without filename
+        # Si no se selecciona un archivo mostrar un mensaje
         if file.filename == '':
             print('No se ha seleccionado un archivo')
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-            #loading image
+            # Cargar imagen y preprocesarla
             filename = UPLOAD_FOLDER + '/' + filename
             print("\nNombre del archivo:",filename)
 
@@ -58,7 +58,6 @@ def procesar():
 
             with graph.as_default():
             	result = cargar_modelo.predict(test_image)[0][0]
-            	# print(result)
             	
 		        # Resultados
             	prediccion = 1 if (result >= 0.5) else 0
